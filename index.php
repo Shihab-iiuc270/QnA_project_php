@@ -20,6 +20,13 @@
     //
     include("./client/ask.php");
  }
+ elseif(isset($_GET['q-id'])){
+   $qid=$_GET['q-id'];
+   include("./client/question-details.php");
+ }
+ else{
+   include("./client/questions.php");
+ }
  ?>
 
 </body>

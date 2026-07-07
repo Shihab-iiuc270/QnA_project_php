@@ -61,7 +61,7 @@ values(NULL,'$title','$description','$category_id','$user_id');
     $result = $question->execute();
     $question->insert_id;
     if ($result) {
-        header("location: /discuss");
+        header("location: ../index.php");
     } else {
         echo "Question is added to website";
     }

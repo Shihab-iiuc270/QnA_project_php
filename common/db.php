@@ -10,6 +10,6 @@ if($conn->connect_error){
     die("connection failed : ". $conn->connect_error);
 }
 
-echo "db conected";
+// echo "db conected";
 
 ?>
