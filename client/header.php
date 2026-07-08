@@ -1,3 +1,22 @@
+<?php if (isset($_SESSION["error"])): ?>
+  <div class="container mt-3">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <?= htmlspecialchars($_SESSION["error"]) ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  </div>
+  <?php unset($_SESSION["error"]); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION["success"])): ?>
+  <div class="container mt-3">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <?= htmlspecialchars($_SESSION["success"]) ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  </div>
+  <?php unset($_SESSION["success"]); ?>
+<?php endif; ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container">
     <a class="navbar-brand" href="./">

@@ -4,13 +4,15 @@ include("../common/db.php");
 if (isset($_POST['signup'])) {
     $username = $_POST['username'];
     $email = $_POST['email'];
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password'],PASSWORD_BCRYPT);
     $address = $_POST['address'];
 
-    $user = $conn->prepare("Insert into `users`
-(`id`,`username`,`email`,`password`,`address`)
-values(NULL,'$username','$email','$password','$address');
+   $user = $conn->prepare("
+    INSERT INTO users (id, username, email, password, address)
+    VALUES (NULL, ?, ?, ?, ?)
 ");
+
+$user->bind_param("ssss", $username, $email, $password, $address);
 
     $result = $user->execute();
     $user->insert_id;
@@ -19,7 +21,8 @@ values(NULL,'$username','$email','$password','$address');
         $_SESSION["user"] = ["username" => $username, "email" => $email, "user_id" => $user->insert_id];
         header("location: ../index.php");
     } else {
-        echo "New user not registered";
+$_SESSION["error"] = "Signup failed. Please try again.";
+header("location: ../index.php?signup=true");
     }
 
 } else if (isset($_POST['login'])) {
@@ -28,21 +31,25 @@ values(NULL,'$username','$email','$password','$address');
     $username = "";
     $user_id = 0;
 
-    $query = "select * from users where email='$email' and password='$password'";
-    $result = $conn->query($query);
+    $stmt = $conn->prepare("select * from users where email= ?");
+    $stmt->bind_param('s',$email);
+    $stmt->execute();
+    $result = $stmt->get_result();
     if ($result->num_rows == 1) {
-
-        foreach ($result as $row) {
-
-            $username = $row['username'];
-            $user_id = $row['id'];
+        $row= $result->fetch_assoc();
+         if (password_verify($password, $row['password'])) {
+            $_SESSION["user"] = ["username" => $row['username'], "email" => $row['email'], "user_id" => $row['id']];
+            $_SESSION["success"] = "You are logged in!";
+            header("location: ../index.php");
+        }
+        else{
+            $_SESSION["error"] = "Wrong password. Try again.";
+            header("location: ../index.php?login=true");
         }
 
-        $_SESSION["user"] = ["username" => $username, "email" => $email, "user_id" => $user_id];
-        header("location: ../index.php");
     } else {
-        echo "New user not registered";
-    }
+$_SESSION["error"] = "No account found with that email.";
+header("location: ../index.php?login=true");    }
 
 } else if (isset($_GET['logout'])) {
     session_unset();
